@@ -1,0 +1,1 @@
+g++ main.cpp -IC:\mingw_dev_lib\SDL2-2.0.10\i686-w64-mingw32\include\SDL2 -LC:\mingw_dev_lib\SDL2-2.0.10\i686-w64-mingw32\lib -Wl,-subsystem,windows -lmingw32 -lSDL2main -lSDL2

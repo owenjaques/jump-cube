@@ -1,0 +1,25 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "g++.exe build active file",
+			"type": "shell",
+			"command": "g++",
+            "args": [
+				"-g",
+				"-Wall",
+				"-IC:\\mingw_dev_lib\\SDL2-2.0.10\\i686-w64-mingw32\\include\\SDL2",
+				"-LC:\\mingw_dev_lib\\SDL2-2.0.10\\i686-w64-mingw32\\lib",
+				"'-Wl,-subsystem,windows'",
+				"-lmingw32",
+				"-lSDL2main",
+				"-lSDL2",
+                "-o",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe",
+				"${file}"
+			]
+		}
+	]
+}
