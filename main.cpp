@@ -1,5 +1,7 @@
-#include <stdio.h>
+#include <iostream>
 #include <SDL.h>
+
+#include "player.h"
 
 using namespace std;
 
@@ -9,26 +11,33 @@ const int SCREEN_WIDTH = 720;
 int main(int argv, char* args[]){
 	SDL_Window* window = NULL;
 	SDL_Surface* screen_surface = NULL;
-	SDL_Surface* the_image = NULL;
 	if(SDL_Init(SDL_INIT_VIDEO) < 0){
-		printf("SDL has returned an error initializing\n");
+		cout << "SDL has returned an error initializing\n";
 		return 1;
 	}
 	window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if(!window){
-		printf("SDL was unable to create the window\n");
+		cout << "SDL was unable to create the window\n";
 		return 1;
 	}
+
 	screen_surface = SDL_GetWindowSurface(window);
-	the_image = SDL_LoadBMP("images/player.bmp");
-	SDL_BlitSurface(the_image, NULL, screen_surface, NULL);
-	SDL_UpdateWindowSurface(window);
+	Player* player = new Player(20, 20, 32, 32, "images/player.bmp", screen_surface);
 
-
-
-	SDL_Delay(2000);
+	bool exit = false;
+	SDL_Event e;
+	while(!exit){
+		while(SDL_PollEvent(&e) != 0){
+			if(e.type == SDL_QUIT)
+				exit = true;
+		}
+		SDL_BlitScaled(player->image, NULL, screen_surface, &(player->stretch_rect));
+		//SDL_BlitSurface(player->image, NULL, screen_surface, NULL);
+		SDL_UpdateWindowSurface(window);
+	}
 	
 	//clean up
+	delete player;
 	SDL_DestroyWindow(window);
     SDL_Quit();
 	return 0;
