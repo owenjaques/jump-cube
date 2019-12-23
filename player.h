@@ -8,14 +8,14 @@
 
 class Player {
 	public:
-		SDL_Surface* image;
+		SDL_Texture* image;
 		//for blitting at different locations and different sizes
-		SDL_Rect stretch_rect;
+		SDL_Rect dest_rect;
 		int x;
 		int y;
 		int width;
 		int height;
-		Player(int x, int y, int width, int height, char* image_string, SDL_Surface* screen_surface);
+		Player(int x, int y, int width, int height, char* image_string, SDL_Renderer* game_renderer);
 		~Player();
 		update_rect();
 		

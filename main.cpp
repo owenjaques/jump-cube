@@ -11,23 +11,27 @@ const int SCREEN_WIDTH = 720;
 
 int main(int argv, char* args[]){
 	SDL_Window* window = NULL;
-	SDL_Surface* screen_surface = NULL;
+	SDL_Renderer* game_renderer = NULL;
 	if(SDL_Init(SDL_INIT_VIDEO) < 0){
-		cout << "SDL has returned an error initializing\n";
+		cout << "SDL has returned an error initializing" << endl;
 		return 1;
 	}
 	if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)){
-		cout << "SDL was unable to initialize imaging\n";
+		cout << "SDL was unable to initialize imaging" << endl;
 		return 1;
 	}
 	window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if(!window){
-		cout << "SDL was unable to create the window\n";
+		cout << "SDL was unable to create the window" << endl;
 		return 1;
 	}
+	game_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if(!game_renderer){
+		cout << "SDL was unable to create the game renderer" << endl;
+	}
+	SDL_SetRenderDrawColor(game_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-	screen_surface = SDL_GetWindowSurface(window);
-	Player* player = new Player(20, 20, 32, 32, "images/player.png", screen_surface);
+	Player* player = new Player(20, 20, 32, 32, "images/player.png", game_renderer);
 
 	bool exit = false;
 	SDL_Event e;
@@ -36,13 +40,19 @@ int main(int argv, char* args[]){
 			if(e.type == SDL_QUIT)
 				exit = true;
 		}
-		SDL_BlitScaled(player->image, NULL, screen_surface, &(player->stretch_rect));
-		SDL_UpdateWindowSurface(window);
+		SDL_RenderClear(game_renderer);
+		//Render texture to screen
+		SDL_RenderCopy(game_renderer, player->image, NULL, &(player->dest_rect));
+		//Update screen
+		SDL_RenderPresent(game_renderer);
 	}
 	
 	//clean up
 	delete player;
+	SDL_DestroyRenderer(game_renderer);
+	game_renderer = NULL;
 	SDL_DestroyWindow(window);
+	window = NULL;
     SDL_Quit();
 	return 0;
 }
