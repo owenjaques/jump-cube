@@ -2,6 +2,8 @@
 #define PLAYER_H
 
 #include <SDL.h>
+#include <SDL_image.h>
+
 //make this extend some object class later on
 
 class Player {

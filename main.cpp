@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include "player.h"
 
@@ -15,6 +16,10 @@ int main(int argv, char* args[]){
 		cout << "SDL has returned an error initializing\n";
 		return 1;
 	}
+	if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)){
+		cout << "SDL was unable to initialize imaging\n";
+		return 1;
+	}
 	window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if(!window){
 		cout << "SDL was unable to create the window\n";
@@ -22,7 +27,7 @@ int main(int argv, char* args[]){
 	}
 
 	screen_surface = SDL_GetWindowSurface(window);
-	Player* player = new Player(20, 20, 32, 32, "images/player.bmp", screen_surface);
+	Player* player = new Player(20, 20, 32, 32, "images/player.png", screen_surface);
 
 	bool exit = false;
 	SDL_Event e;
@@ -32,7 +37,6 @@ int main(int argv, char* args[]){
 				exit = true;
 		}
 		SDL_BlitScaled(player->image, NULL, screen_surface, &(player->stretch_rect));
-		//SDL_BlitSurface(player->image, NULL, screen_surface, NULL);
 		SDL_UpdateWindowSurface(window);
 	}
 	

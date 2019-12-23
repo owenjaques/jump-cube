@@ -8,7 +8,7 @@ Player::Player(int x, int y, int width, int height, char* image_string, SDL_Surf
 	this->height = height;
 
 	SDL_Surface* image = NULL;
-	image = SDL_LoadBMP(image_string);
+	image = IMG_Load(image_string);
 	if(image == NULL)
 		std::cout << "could not load image\n";
 	this->image = SDL_ConvertSurface(image, screen_surface->format, 0);
