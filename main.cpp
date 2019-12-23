@@ -12,6 +12,7 @@ const int SCREEN_WIDTH = 720;
 int main(int argv, char* args[]){
 	SDL_Window* window = NULL;
 	SDL_Renderer* game_renderer = NULL;
+	SDL_Texture* sprite_sheet = NULL;
 	if(SDL_Init(SDL_INIT_VIDEO) < 0){
 		cout << "SDL has returned an error initializing" << endl;
 		return 1;
@@ -31,19 +32,34 @@ int main(int argv, char* args[]){
 	}
 	SDL_SetRenderDrawColor(game_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-	Player* player = new Player(20, 20, 32, 32, "images/player.png", game_renderer);
+	//loads the sprite sheet as a texture
+	SDL_Surface* image = NULL;
+	image = IMG_Load("images/player.png");
+	if(image == NULL){
+		cout << "could not load image" << endl;
+		return 1;
+	}
+	sprite_sheet = SDL_CreateTextureFromSurface(game_renderer, image);
+	if(sprite_sheet == NULL){
+		cout << "could not convert image to texture" << endl;
+		return 1;
+	}
+	SDL_FreeSurface(image);
+
+	Player* player = new Player(20, 20, 32, 32);
 
 	bool exit = false;
 	SDL_Event e;
 	while(!exit){
+		//finds out which keys have been pressed
 		while(SDL_PollEvent(&e) != 0){
 			if(e.type == SDL_QUIT)
 				exit = true;
 		}
 		SDL_RenderClear(game_renderer);
-		//Render texture to screen
-		SDL_RenderCopy(game_renderer, player->image, NULL, &(player->dest_rect));
-		//Update screen
+		//render player
+		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
+		//uspdate screen
 		SDL_RenderPresent(game_renderer);
 	}
 	
@@ -51,6 +67,8 @@ int main(int argv, char* args[]){
 	delete player;
 	SDL_DestroyRenderer(game_renderer);
 	game_renderer = NULL;
+	SDL_DestroyTexture(sprite_sheet);
+	sprite_sheet = NULL;
 	SDL_DestroyWindow(window);
 	window = NULL;
     SDL_Quit();

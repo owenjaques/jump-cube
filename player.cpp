@@ -1,32 +1,14 @@
 #include "player.h"
 #include <iostream>
 
-Player::Player(int x, int y, int width, int height, char* image_string, SDL_Renderer* game_renderer){
-	this->x = x;
-	this->y = y;
-	this->width = width;
-	this->height = height;
+Player::Player(int x, int y, int width, int height){
+	src_rect.x = 0;
+	src_rect.y = 0;
+	src_rect.h = 32;
+	src_rect.w = 32;
 
-	SDL_Surface* image = NULL;
-	image = IMG_Load(image_string);
-	if(image == NULL)
-		std::cout << "could not load image" << std::endl;
-	this->image = SDL_CreateTextureFromSurface(game_renderer, image);
-	if(this->image == NULL)
-		std::cout << "could not convert image to texture" << std::endl;
-	SDL_FreeSurface(image);
-
-	update_rect();
-}
-
-Player::~Player(){
-	SDL_DestroyTexture(this->image);
-	this->image = NULL;
-}
-
-Player::update_rect(){
-	this->dest_rect.x = this->x;
-	this->dest_rect.y = this->y;
-	this->dest_rect.w = this->width;
-	this->dest_rect.h = this->height;
+	dest_rect.x = x;
+	dest_rect.y = y;
+	dest_rect.w = width;
+	dest_rect.h = height;
 }
