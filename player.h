@@ -12,6 +12,8 @@ class Player {
 		SDL_Rect src_rect;
 
 		Player(int x, int y, int width, int height);
+
+		void update_animation(int frame);
 };
 
 #endif

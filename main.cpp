@@ -26,7 +26,7 @@ int main(int argv, char* args[]){
 		cout << "SDL was unable to create the window" << endl;
 		return 1;
 	}
-	game_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	game_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if(!game_renderer){
 		cout << "SDL was unable to create the game renderer" << endl;
 	}
@@ -50,6 +50,7 @@ int main(int argv, char* args[]){
 
 	bool exit = false;
 	SDL_Event e;
+	int frame = 0;
 	while(!exit){
 		//finds out which keys have been pressed
 		while(SDL_PollEvent(&e) != 0){
@@ -58,9 +59,12 @@ int main(int argv, char* args[]){
 		}
 		SDL_RenderClear(game_renderer);
 		//render player
+		player->update_animation(frame);
 		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
 		//uspdate screen
 		SDL_RenderPresent(game_renderer);
+
+		frame = (frame / 4 == 4) ? 0 : frame + 1;
 	}
 	
 	//clean up
