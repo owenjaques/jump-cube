@@ -29,3 +29,11 @@ void Player::update_animation(int frame){
 			break;
 	}	
 }
+
+void Player::move_left(){
+	dest_rect.x -= 2;
+}
+
+void Player::move_right(){
+	dest_rect.x += 2;
+}

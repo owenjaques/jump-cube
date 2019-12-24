@@ -4,6 +4,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+//add states for different animations
+
 class Player {
 	public:
 		//for rendering at different locations and different sizes
@@ -14,6 +16,8 @@ class Player {
 		Player(int x, int y, int width, int height);
 
 		void update_animation(int frame);
+		void move_right();
+		void move_left();
 };
 
 #endif

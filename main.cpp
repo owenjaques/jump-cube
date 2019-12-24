@@ -65,7 +65,7 @@ int main(int argv, char* args[]){
 	if(!init())
 		return 1;
 
-	Player* player = new Player(20, 20, 32, 32);
+	Player* player = new Player(20, 300, 32, 32);
 
 	bool exit = false;
 	SDL_Event e;
@@ -75,6 +75,18 @@ int main(int argv, char* args[]){
 		while(SDL_PollEvent(&e) != 0){
 			if(e.type == SDL_QUIT)
 				exit = true;
+		}
+		//sees if the player is being moved at all
+		const Uint8* current_key_states = SDL_GetKeyboardState(NULL);
+		if(current_key_states[SDL_SCANCODE_UP]){
+		}
+		if(current_key_states[SDL_SCANCODE_DOWN]){
+		}
+		if(current_key_states[SDL_SCANCODE_LEFT]){
+			player->move_left();
+		}
+		if(current_key_states[SDL_SCANCODE_RIGHT]){
+			player->move_right();
 		}
 		SDL_RenderClear(game_renderer);
 		//render player
