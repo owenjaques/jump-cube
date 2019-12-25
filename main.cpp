@@ -14,7 +14,7 @@ using namespace std;
 #define LEFT 3
 
 const int SCREEN_HEIGHT = 480;
-const int SCREEN_WIDTH = 720;
+const int SCREEN_WIDTH = 736;
 
 SDL_Window* window = NULL;
 SDL_Renderer* game_renderer = NULL;
@@ -68,6 +68,15 @@ void clean_up(){
     SDL_Quit();
 }
 
+SDL_Rect create_sky(){
+	SDL_Rect sky;
+	sky.x = 0;
+	sky.y = 32;
+	sky.w = 32;
+	sky.h = 32;
+	return sky;
+}
+
 int main(int argv, char* args[]){
 	if(!init())
 		return 1;
@@ -77,6 +86,8 @@ int main(int argv, char* args[]){
 	list<Brick*> bricks;
 	for(int i = 0; i < SCREEN_WIDTH/16; i++)
 		bricks.push_back(new Brick(i*16, 332, 16, 16));
+
+	SDL_Rect sky_rect = create_sky();
 
 	bool exit = false;
 	SDL_Event e;
@@ -101,12 +112,21 @@ int main(int argv, char* args[]){
 		player->update(frame, states);
 
 		SDL_RenderClear(game_renderer);
-		//render player
-		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
 
-		//prints the bricks
+		//renders the sky
+		SDL_Rect sky_dest;
+		for(int i = 0; i < SCREEN_HEIGHT/32; i++)
+			for(int j = 0; j < SCREEN_WIDTH/32; j++){
+				sky_dest = (SDL_Rect){j*32, i*32, 32, 32};
+				SDL_RenderCopy(game_renderer, sprite_sheet, &(sky_rect), &(sky_dest));
+			}
+
+		//renders the bricks
 		for(list<Brick*>::iterator i = bricks.begin(); i != bricks.end(); ++i)
 			SDL_RenderCopy(game_renderer, sprite_sheet, &((*i)->src_rect), &((*i)->dest_rect));
+
+		//render player
+		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
 		
 		//update screen
 		SDL_RenderPresent(game_renderer);
