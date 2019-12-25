@@ -96,6 +96,7 @@ int main(int argv, char* args[]){
 		player->update(frame, states);
 
 		SDL_RenderClear(game_renderer);
+		//render player
 		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
 		//update screen
 		SDL_RenderPresent(game_renderer);

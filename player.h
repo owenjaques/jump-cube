@@ -22,9 +22,14 @@ class Player {
 		void update(int frame, std::array<bool, 4> states);
 
 	private:
+		const int TERMINAL_VELOCITY = 10;
+		double velocity;
 		void get_direction(std::array<bool, 4> states);
 		void move_right();
 		void move_left();
+		void jump();
+		void drop();
+		void change_y();
 };
 
 #endif

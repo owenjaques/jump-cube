@@ -1,5 +1,6 @@
 #include "player.h"
 #include <iostream>
+#include <cmath>
 
 Player::Player(int x, int y, int width, int height){
 	src_rect.x = 0;
@@ -11,6 +12,8 @@ Player::Player(int x, int y, int width, int height){
 	dest_rect.y = y;
 	dest_rect.w = width;
 	dest_rect.h = height;
+
+	velocity = 0;
 }
 
 void Player::update(int frame, std::array<bool, 4> states){
@@ -29,6 +32,7 @@ void Player::update(int frame, std::array<bool, 4> states){
 			break;
 	}
 	get_direction(states);
+	change_y();
 }
 
 void Player::get_direction(std::array<bool, 4> states){
@@ -57,12 +61,54 @@ void Player::get_direction(std::array<bool, 4> states){
 
 	former_direction = direction;
 	former_states = states;
+
+	if(states[UP])
+		jump();
+
+	if(states[DOWN])
+		drop();
 }
 
 void Player::move_left(){
-	dest_rect.x -= 2;
+	if(velocity < TERMINAL_VELOCITY)
+		dest_rect.x -= 2;
 }
 
 void Player::move_right(){
-	dest_rect.x += 2;
+	if(velocity < TERMINAL_VELOCITY)
+		dest_rect.x += 2;
+}
+
+void Player::jump(){
+	//obviously will add stuff to see if in contact with stuff
+	if(dest_rect.y == 300)
+		velocity = -6;
+}
+
+//add function to see if in contact with stuff for this function and jump
+
+void Player::change_y(){
+	//obviously change things to test if they are contacting with anything
+	for(int i = 0; i < abs((int)velocity); i++){
+		if(velocity < 0)
+			//if not hitting something from above
+			dest_rect.y--;
+		else
+			if(dest_rect.y != 300)//if not hitting something from below
+				dest_rect.y++;
+	}
+
+	//if not hitting something from below
+	//this adds the gravity with a terminal velocity of 10 gravity
+	if(dest_rect.y != 300){
+		if(velocity < TERMINAL_VELOCITY)
+			velocity += 0.2;
+	}
+	else
+		velocity = 0;	
+}
+
+void Player::drop(){
+	if(dest_rect.y != 300)
+		velocity = 10;
 }
