@@ -3,11 +3,6 @@
 #include <cmath>
 
 Object::Object(int x, int y, int width, int height){
-	src_rect.x = 0;
-	src_rect.y = 0;
-	src_rect.h = 32;
-	src_rect.w = 32;
-
 	dest_rect.x = x;
 	dest_rect.y = y;
 	dest_rect.w = width;
@@ -15,6 +10,10 @@ Object::Object(int x, int y, int width, int height){
 }
 
 Player::Player(int x, int y, int width, int height):Object(x, y, width, height){
+	src_rect.x = 0;
+	src_rect.y = 0;
+	src_rect.h = 32;
+	src_rect.w = 32;
 	velocity = 0;
 }
 
@@ -113,4 +112,11 @@ void Player::change_y(){
 void Player::drop(){
 	if(dest_rect.y != 300)
 		velocity = 10;
+}
+
+Brick::Brick(int x, int y, int width, int height):Object(x, y, width, height){
+	src_rect.x = 32;
+	src_rect.y = 32;
+	src_rect.h = 16;
+	src_rect.w = 16;
 }

@@ -16,7 +16,7 @@ class Object {
 		SDL_Rect dest_rect;
 		//the location of the player on the sprite sheet
 		SDL_Rect src_rect;
-
+		
 		Object(int x, int y, int width, int height);
 };
 
@@ -34,6 +34,11 @@ class Player: public Object {
 		void jump();
 		void drop();
 		void change_y();
+};
+
+class Brick: public Object {
+	public:
+		Brick(int x, int y, int width, int height);
 };
 
 #endif

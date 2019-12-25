@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include <list> 
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -73,6 +74,10 @@ int main(int argv, char* args[]){
 
 	Player* player = new Player(20, 300, 32, 32);
 
+	list<Brick*> bricks;
+	for(int i = 0; i < SCREEN_WIDTH/16; i++)
+		bricks.push_back(new Brick(i*16, 332, 16, 16));
+
 	bool exit = false;
 	SDL_Event e;
 	int frame = 0;
@@ -84,7 +89,7 @@ int main(int argv, char* args[]){
 		}
 		//sees if the player is being moved at all
 		const Uint8* current_key_states = SDL_GetKeyboardState(NULL);
-		std::array<bool, 4> states = {false, false, false, false};
+		array<bool, 4> states = {false, false, false, false};
 		if(current_key_states[SDL_SCANCODE_UP])
 			states[UP] = true;
 		if(current_key_states[SDL_SCANCODE_DOWN])
@@ -98,6 +103,11 @@ int main(int argv, char* args[]){
 		SDL_RenderClear(game_renderer);
 		//render player
 		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
+
+		//prints the bricks
+		for(list<Brick*>::iterator i = bricks.begin(); i != bricks.end(); ++i)
+			SDL_RenderCopy(game_renderer, sprite_sheet, &((*i)->src_rect), &((*i)->dest_rect));
+		
 		//update screen
 		SDL_RenderPresent(game_renderer);
 
@@ -105,6 +115,7 @@ int main(int argv, char* args[]){
 	}
 
 	delete player;
+	bricks.clear();
 	clean_up();
 	return 0;
 }
