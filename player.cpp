@@ -13,7 +13,7 @@ Player::Player(int x, int y, int width, int height){
 	dest_rect.h = height;
 }
 
-void Player::update_animation(int frame){
+void Player::update(int frame, std::array<bool, 4> states){
 	switch(frame / 4){
 		case 0:
 			src_rect.x = 0;
@@ -27,7 +27,36 @@ void Player::update_animation(int frame){
 		case 3:
 			src_rect.x = 96;
 			break;
-	}	
+	}
+	get_direction(states);
+}
+
+void Player::get_direction(std::array<bool, 4> states){
+	//determines which way to go depending on the last key(s) pressed for smooth playing
+	static int former_direction = -1;
+	static std::array<bool, 4> former_states = {false, false, false, false};
+	int direction = -1;
+	if(states[RIGHT] && states[LEFT]){
+		if(former_states[RIGHT] && former_states[LEFT])
+			direction = former_direction;
+		else if(former_direction == RIGHT)
+			direction = LEFT;
+		else 
+			direction = RIGHT;
+	}
+		
+	else if(states[RIGHT])
+		direction = RIGHT;
+	else if(states[LEFT])
+		direction = LEFT;
+	
+	if(direction == RIGHT)
+		move_right();
+	if(direction == LEFT)
+		move_left();
+
+	former_direction = direction;
+	former_states = states;
 }
 
 void Player::move_left(){

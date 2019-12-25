@@ -1,10 +1,16 @@
 #include <iostream>
+#include <array>
 #include <SDL.h>
 #include <SDL_image.h>
 
 #include "player.h"
 
 using namespace std;
+
+#define UP 0
+#define DOWN 1
+#define RIGHT 2
+#define LEFT 3
 
 const int SCREEN_HEIGHT = 480;
 const int SCREEN_WIDTH = 720;
@@ -78,19 +84,18 @@ int main(int argv, char* args[]){
 		}
 		//sees if the player is being moved at all
 		const Uint8* current_key_states = SDL_GetKeyboardState(NULL);
-		if(current_key_states[SDL_SCANCODE_UP]){
-		}
-		if(current_key_states[SDL_SCANCODE_DOWN]){
-		}
-		if(current_key_states[SDL_SCANCODE_LEFT]){
-			player->move_left();
-		}
-		if(current_key_states[SDL_SCANCODE_RIGHT]){
-			player->move_right();
-		}
+		std::array<bool, 4> states = {false, false, false, false};
+		if(current_key_states[SDL_SCANCODE_UP])
+			states[UP] = true;
+		if(current_key_states[SDL_SCANCODE_DOWN])
+			states[DOWN] = true;
+		if(current_key_states[SDL_SCANCODE_LEFT])
+			states[LEFT] = true;
+		if(current_key_states[SDL_SCANCODE_RIGHT])
+			states[RIGHT] = true;
+		player->update(frame, states);
+
 		SDL_RenderClear(game_renderer);
-		//render player
-		player->update_animation(frame);
 		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
 		//update screen
 		SDL_RenderPresent(game_renderer);

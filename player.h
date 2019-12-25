@@ -3,8 +3,12 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <array>
 
-//add states for different animations
+#define UP 0
+#define DOWN 1
+#define RIGHT 2
+#define LEFT 3
 
 class Player {
 	public:
@@ -15,7 +19,10 @@ class Player {
 
 		Player(int x, int y, int width, int height);
 
-		void update_animation(int frame);
+		void update(int frame, std::array<bool, 4> states);
+
+	private:
+		void get_direction(std::array<bool, 4> states);
 		void move_right();
 		void move_left();
 };
