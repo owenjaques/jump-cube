@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "player.h"
+#include "objects.h"
 
 using namespace std;
 
@@ -42,7 +42,7 @@ int init(){
 
 	//loads the sprite sheet as a texture
 	SDL_Surface* image = NULL;
-	image = IMG_Load("images/player.png");
+	image = IMG_Load("images/spritesheet.png");
 	if(image == NULL){
 		cout << "could not load image" << endl;
 		return 0;

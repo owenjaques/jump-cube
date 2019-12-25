@@ -1,5 +1,5 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef OBJECTS_H
+#define OBJECTS_H
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -10,15 +10,19 @@
 #define RIGHT 2
 #define LEFT 3
 
-class Player {
+class Object {
 	public:
 		//for rendering at different locations and different sizes
 		SDL_Rect dest_rect;
 		//the location of the player on the sprite sheet
 		SDL_Rect src_rect;
 
-		Player(int x, int y, int width, int height);
+		Object(int x, int y, int width, int height);
+};
 
+class Player: public Object {
+	public:
+		Player(int x, int y, int width, int height);
 		void update(int frame, std::array<bool, 4> states);
 
 	private:

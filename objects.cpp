@@ -1,8 +1,8 @@
-#include "player.h"
+#include "objects.h"
 #include <iostream>
 #include <cmath>
 
-Player::Player(int x, int y, int width, int height){
+Object::Object(int x, int y, int width, int height){
 	src_rect.x = 0;
 	src_rect.y = 0;
 	src_rect.h = 32;
@@ -12,7 +12,9 @@ Player::Player(int x, int y, int width, int height){
 	dest_rect.y = y;
 	dest_rect.w = width;
 	dest_rect.h = height;
+}
 
+Player::Player(int x, int y, int width, int height):Object(x, y, width, height){
 	velocity = 0;
 }
 
