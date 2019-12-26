@@ -61,35 +61,34 @@ void clean_up(){
     SDL_Quit();
 }
 
-SDL_Rect create_sky(){
-	SDL_Rect sky;
-	sky.x = 0;
-	sky.y = 32;
-	sky.w = 32;
-	sky.h = 32;
-	return sky;
-}
-
 int main(int argv, char* args[]){
 	if(!init())
 		return 1;
 
 	Player* player = new Player(20, 304, 32, 32);
 
+	//remove all this eventually to read levels from files
 	int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE];
 	for(int i = 0; i < SCREEN_HEIGHT/TILE_SIZE; i++)
 		for(int j = 0; j < SCREEN_WIDTH/TILE_SIZE; j++)
 			map[i][j] = SKY;
 
-	list<Brick*> bricks;
 	for(int i = 0; i < SCREEN_WIDTH/16; i++){
-		bricks.push_back(new Brick(i*16, 336, 16, 16));
-		bricks.push_back(new Brick(i*16, 336-64, 16, 16));
 		map[336/TILE_SIZE][i] = BRICK;
 		map[(336-64)/16][i] = BRICK;
 	}
 
-	SDL_Rect sky_rect = create_sky();
+	SDL_Rect sky_src_rect;
+	sky_src_rect.x = 0;
+	sky_src_rect.y = 32;
+	sky_src_rect.w = 16;
+	sky_src_rect.h = 16;
+
+	SDL_Rect brick_src_rect;
+	brick_src_rect.x = 32;
+	brick_src_rect.y = 32;
+	brick_src_rect.h = 16;
+	brick_src_rect.w = 16;
 
 	bool exit = false;
 	SDL_Event e;
@@ -115,17 +114,21 @@ int main(int argv, char* args[]){
 
 		SDL_RenderClear(game_renderer);
 
-		//renders the sky
-		SDL_Rect sky_dest;
-		for(int i = 0; i < SCREEN_HEIGHT/32; i++)
-			for(int j = 0; j < SCREEN_WIDTH/32; j++){
-				sky_dest = (SDL_Rect){j*32, i*32, 32, 32};
-				SDL_RenderCopy(game_renderer, sprite_sheet, &(sky_rect), &(sky_dest));
-			}
+		//renders the map
+		SDL_Rect dest_rect;
+		SDL_Rect* src_rect = NULL;
+		for(int i = 0; i < SCREEN_HEIGHT / TILE_SIZE; i++)
+			for(int j = 0; j < SCREEN_WIDTH / TILE_SIZE; j++){
+				//decided what to render
+				if(map[i][j] == BRICK)
+					src_rect = &brick_src_rect;
+				else if(map[i][j] == SKY)
+					src_rect = &sky_src_rect;
 
-		//renders the bricks
-		for(list<Brick*>::iterator i = bricks.begin(); i != bricks.end(); ++i)
-			SDL_RenderCopy(game_renderer, sprite_sheet, &((*i)->src_rect), &((*i)->dest_rect));
+				dest_rect = (SDL_Rect){j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE};
+
+				SDL_RenderCopy(game_renderer, sprite_sheet, &(*src_rect), &(dest_rect));
+			}
 
 		//render player
 		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
@@ -137,7 +140,6 @@ int main(int argv, char* args[]){
 	}
 
 	delete player;
-	bricks.clear();
 	clean_up();
 	return 0;
 }

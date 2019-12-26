@@ -33,9 +33,4 @@ class Player: public Object {
 		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };
 
-class Brick: public Object {
-	public:
-		Brick(int x, int y, int width, int height);
-};
-
 #endif

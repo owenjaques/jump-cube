@@ -133,12 +133,3 @@ void Player::drop(){
 	if(dest_rect.y != 300)
 		velocity = 10;
 }
-
-
-
-Brick::Brick(int x, int y, int width, int height):Object(x, y, width, height){
-	src_rect.x = 32;
-	src_rect.y = 32;
-	src_rect.h = 16;
-	src_rect.w = 16;
-}
