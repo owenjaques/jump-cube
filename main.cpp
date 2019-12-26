@@ -78,6 +78,10 @@ int main(int argv, char* args[]){
 		map[(336-64)/16][i] = BRICK;
 	}
 
+	map[(336-64)/16][0] = SKY;
+	map[(336-64)/16][5] = SKY;
+	map[(336-64)/16][6] = SKY;
+
 	SDL_Rect sky_src_rect;
 	sky_src_rect.x = 0;
 	sky_src_rect.y = 32;
