@@ -55,9 +55,9 @@ void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TIL
 		direction = LEFT;
 	
 	if(direction == RIGHT)
-		move_right();
+		move_right(map);
 	else if(direction == LEFT)
-		move_left();
+		move_left(map);
 
 	former_direction = direction;
 	former_states = states;
@@ -66,15 +66,15 @@ void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TIL
 		jump(map);
 
 	if(states[DOWN])
-		drop();
+		drop(map);
 }
 
-void Player::move_left(){
-	if(velocity < TERMINAL_VELOCITY)
+void Player::move_left(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	if(velocity < TERMINAL_VELOCITY && !is_colliding(LEFT, map))
 		dest_rect.x -= 2;
 }
 
-void Player::move_right(){
+void Player::move_right(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	if(velocity < TERMINAL_VELOCITY)
 		dest_rect.x += 2;
 }
@@ -99,6 +99,8 @@ bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN
 				return true;
 			break;
 		case LEFT:
+			if(dest_rect.x % TILE_SIZE == 0 && (map[dest_rect.y / TILE_SIZE][(dest_rect.x / TILE_SIZE) - 1] == BRICK || map[(dest_rect.y / TILE_SIZE) + 1][(dest_rect.x / TILE_SIZE) - 1] == BRICK || (dest_rect.y % TILE_SIZE != 0 && map[(dest_rect.y / TILE_SIZE) + 2][(dest_rect.x / TILE_SIZE) - 1] == BRICK)))
+				return true;
 			break;
 		case RIGHT:
 			break;
@@ -129,7 +131,7 @@ void Player::change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 		velocity = 0;	
 }
 
-void Player::drop(){
-	if(dest_rect.y != 300)
+void Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	if(!is_colliding(DOWN, map))
 		velocity = 10;
 }
