@@ -4,17 +4,10 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include "constants.h"
 #include "objects.h"
 
 using namespace std;
-
-#define UP 0
-#define DOWN 1
-#define RIGHT 2
-#define LEFT 3
-
-const int SCREEN_HEIGHT = 480;
-const int SCREEN_WIDTH = 736;
 
 SDL_Window* window = NULL;
 SDL_Renderer* game_renderer = NULL;
@@ -81,11 +74,18 @@ int main(int argv, char* args[]){
 	if(!init())
 		return 1;
 
-	Player* player = new Player(20, 300, 32, 32);
+	Player* player = new Player(20, 304, 32, 32);
+
+	int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE];
+	for(int i = 0; i < SCREEN_HEIGHT/TILE_SIZE; i++)
+		for(int j = 0; j < SCREEN_WIDTH/TILE_SIZE; j++)
+			map[i][j] = SKY;
 
 	list<Brick*> bricks;
-	for(int i = 0; i < SCREEN_WIDTH/16; i++)
-		bricks.push_back(new Brick(i*16, 332, 16, 16));
+	for(int i = 0; i < SCREEN_WIDTH/16; i++){
+		bricks.push_back(new Brick(i*16, 336, 16, 16));
+		map[336/TILE_SIZE][i] = BRICK;
+	}
 
 	SDL_Rect sky_rect = create_sky();
 
@@ -109,7 +109,7 @@ int main(int argv, char* args[]){
 			states[LEFT] = true;
 		if(current_key_states[SDL_SCANCODE_RIGHT])
 			states[RIGHT] = true;
-		player->update(frame, states);
+		player->update(frame, states, map);
 
 		SDL_RenderClear(game_renderer);
 

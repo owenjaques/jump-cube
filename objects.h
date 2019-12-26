@@ -4,11 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <array>
-
-#define UP 0
-#define DOWN 1
-#define RIGHT 2
-#define LEFT 3
+#include "constants.h"
 
 class Object {
 	public:
@@ -23,17 +19,18 @@ class Object {
 class Player: public Object {
 	public:
 		Player(int x, int y, int width, int height);
-		void update(int frame, std::array<bool, 4> states);
+		void update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 
 	private:
 		const int TERMINAL_VELOCITY = 10;
 		double velocity;
-		void get_direction(std::array<bool, 4> states);
+		void get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void move_right();
 		void move_left();
-		void jump();
+		void jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void drop();
-		void change_y();
+		void change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };
 
 class Brick: public Object {

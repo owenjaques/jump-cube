@@ -17,7 +17,7 @@ Player::Player(int x, int y, int width, int height):Object(x, y, width, height){
 	velocity = 0;
 }
 
-void Player::update(int frame, std::array<bool, 4> states){
+void Player::update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	switch(frame / 4){
 		case 0:
 			src_rect.x = 0;
@@ -32,11 +32,11 @@ void Player::update(int frame, std::array<bool, 4> states){
 			src_rect.x = 96;
 			break;
 	}
-	get_direction(states);
-	change_y();
+	get_direction(states, map);
+	change_y(map);
 }
 
-void Player::get_direction(std::array<bool, 4> states){
+void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//determines which way to go depending on the last key(s) pressed for smooth playing
 	static int former_direction = -1;
 	static std::array<bool, 4> former_states = {false, false, false, false};
@@ -64,7 +64,7 @@ void Player::get_direction(std::array<bool, 4> states){
 	former_states = states;
 
 	if(states[UP])
-		jump();
+		jump(map);
 
 	if(states[DOWN])
 		drop();
@@ -80,28 +80,42 @@ void Player::move_right(){
 		dest_rect.x += 2;
 }
 
-void Player::jump(){
+void Player::jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//obviously will add stuff to see if in contact with stuff
-	if(dest_rect.y == 300)
+	if(is_colliding(DOWN, map))
 		velocity = -6;
 }
 
-//add function to see if in contact with stuff for this function and jump
+bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	switch(direction){
+		case UP:
+			break;
+		case DOWN:
+			if((dest_rect.y + dest_rect.h) % TILE_SIZE == 0 && (map[(dest_rect.y + dest_rect.h) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y + dest_rect.h) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK))
+				return true;
+			break;
+		case LEFT:
+			break;
+		case RIGHT:
+			break;
+	}
+	return false;
+}
 
-void Player::change_y(){
+void Player::change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//obviously change things to test if they are contacting with anything
 	for(int i = 0; i < abs((int)velocity); i++){
 		if(velocity < 0)
 			//if not hitting something from above
 			dest_rect.y--;
 		else
-			if(dest_rect.y != 300)//if not hitting something from below
+			if(!is_colliding(DOWN, map))//if not hitting something from below
 				dest_rect.y++;
 	}
 
 	//if not hitting something from below
 	//this adds the gravity with a terminal velocity of 10 gravity
-	if(dest_rect.y != 300){
+	if(!is_colliding(DOWN, map)){
 		if(velocity < TERMINAL_VELOCITY)
 			velocity += 0.2;
 	}
@@ -113,6 +127,8 @@ void Player::drop(){
 	if(dest_rect.y != 300)
 		velocity = 10;
 }
+
+
 
 Brick::Brick(int x, int y, int width, int height):Object(x, y, width, height){
 	src_rect.x = 32;
