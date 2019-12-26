@@ -81,18 +81,50 @@ void read_map_from_file(string file_name){
 	the_file.close();
 }
 
+SDL_Rect rand_sky_tile(int i, int j){
+	SDL_Rect sky_src_rect1;
+	sky_src_rect1.x = 0;
+	sky_src_rect1.y = 32;
+	sky_src_rect1.w = 16;
+	sky_src_rect1.h = 16;
+
+	SDL_Rect sky_src_rect2;
+	sky_src_rect2.x = 0;
+	sky_src_rect2.y = 48;
+	sky_src_rect2.w = 16;
+	sky_src_rect2.h = 16;
+
+	SDL_Rect sky_src_rect3;
+	sky_src_rect3.x = 16;
+	sky_src_rect3.y = 48;
+	sky_src_rect3.w = 16;
+	sky_src_rect3.h = 16;
+
+	SDL_Rect sky_src_rect4;
+	sky_src_rect4.x = 16;
+	sky_src_rect4.y = 32;
+	sky_src_rect4.w = 16;
+	sky_src_rect4.h = 16;
+
+	int x = (i*7 + j*5) / 3;
+	switch(x % 4){
+		case 0:
+			return sky_src_rect1;
+		case 1:
+			return sky_src_rect2;
+		case 2:
+			return sky_src_rect3;
+		default:
+			return sky_src_rect4;
+	}
+}
+
 int main(int argv, char* args[]){
 	if(!init())
 		return 1;
 
 	Player* player = new Player(20, 200, 32, 32);
 	read_map_from_file("levels/level1.map");
-
-	SDL_Rect sky_src_rect;
-	sky_src_rect.x = 0;
-	sky_src_rect.y = 32;
-	sky_src_rect.w = 16;
-	sky_src_rect.h = 16;
 
 	SDL_Rect brick_src_rect;
 	brick_src_rect.x = 32;
@@ -136,10 +168,13 @@ int main(int argv, char* args[]){
 		for(int i = 0; i < SCREEN_HEIGHT / TILE_SIZE; i++)
 			for(int j = 0; j < SCREEN_WIDTH / TILE_SIZE; j++){
 				//decided what to render
-				if(map[i][j] == BRICK)
+				if(map[i][j] == BRICK){
 					src_rect = &brick_src_rect;
-				else if(map[i][j] == SKY)
-					src_rect = &sky_src_rect;
+				}
+				else if(map[i][j] == SKY){
+					SDL_Rect sky_tile = rand_sky_tile(i, j);
+					src_rect = &sky_tile;
+				}
 
 				dest_rect = (SDL_Rect){j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE};
 
