@@ -70,12 +70,12 @@ void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TIL
 }
 
 void Player::move_left(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
-	if(velocity < TERMINAL_VELOCITY && !is_colliding(LEFT, map))
+	if(velocity < TERMINAL_VELOCITY && !is_colliding(LEFT, map) && dest_rect.x >= 0)
 		dest_rect.x -= 2;
 }
 
 void Player::move_right(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
-	if(velocity < TERMINAL_VELOCITY && !is_colliding(RIGHT, map))
+	if(velocity < TERMINAL_VELOCITY && !is_colliding(RIGHT, map) && dest_rect.x < SCREEN_WIDTH - dest_rect.w)
 		dest_rect.x += 2;
 }
 

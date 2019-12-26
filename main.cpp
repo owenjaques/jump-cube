@@ -122,6 +122,12 @@ int main(int argv, char* args[]){
 			states[RIGHT] = true;
 		player->update(frame, states, map);
 
+		//sees if the player should die
+		if(player->dest_rect.y > SCREEN_HEIGHT){
+			delete player;
+			player = new Player(20, 200, 32, 32);
+		}
+
 		SDL_RenderClear(game_renderer);
 
 		//renders the map
