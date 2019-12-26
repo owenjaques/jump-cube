@@ -18,6 +18,9 @@ Player::Player(int x, int y, int width, int height):Object(x, y, width, height){
 }
 
 void Player::update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	int direction = get_direction(states, map);
+	change_y(map);
+	//finds which frame it is at
 	switch(frame / 4){
 		case 0:
 			src_rect.x = 0;
@@ -32,11 +35,19 @@ void Player::update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT
 			src_rect.x = 96;
 			break;
 	}
-	get_direction(states, map);
-	change_y(map);
+	//finds which animation to display order is important here
+	src_rect.y = 0;
+	if(direction == RIGHT)
+		src_rect.y = 96;
+	else if(direction == LEFT)
+		src_rect.y = 64;
+	if(!is_colliding(DOWN, map))
+		src_rect.y = 128;
+	if(velocity == TERMINAL_VELOCITY)
+		src_rect.y = 160;	
 }
 
-void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+int Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//determines which way to go depending on the last key(s) pressed for smooth playing
 	static int former_direction = -1;
 	static std::array<bool, 4> former_states = {false, false, false, false};
@@ -63,10 +74,14 @@ void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TIL
 	former_states = states;
 
 	if(states[UP])
-		jump(map);
+		if(jump(map))
+			direction = UP;
 
 	if(states[DOWN])
-		drop(map);
+		if(drop(map))
+			direction = DOWN;
+
+	return direction;
 }
 
 void Player::move_left(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
@@ -79,10 +94,12 @@ void Player::move_right(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]
 		dest_rect.x += 2;
 }
 
-void Player::jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
-	//obviously will add stuff to see if in contact with stuff
-	if(is_colliding(DOWN, map))
+bool Player::jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	if(is_colliding(DOWN, map)){
 		velocity = -6;
+		return true;
+	}
+	return false;
 }
 
 //change the == BRICK to is in something to hit function when there are more than bricks
@@ -126,14 +143,17 @@ void Player::change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//if not hitting something from below
 	//this adds the gravity with a terminal velocity of 10 gravity
 	if(!is_colliding(DOWN, map)){
-		if(velocity < TERMINAL_VELOCITY)
+		if(velocity < TERMINAL_VELOCITY - 0.5)
 			velocity += 0.2;
 	}
 	else
 		velocity = 0;	
 }
 
-void Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
-	if(!is_colliding(DOWN, map))
-		velocity = 10;
+bool Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	if(!is_colliding(DOWN, map)){
+		velocity = TERMINAL_VELOCITY;
+		return true;
+	}
+	return false;
 }
