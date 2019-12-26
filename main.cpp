@@ -1,6 +1,8 @@
 #include <iostream>
 #include <array>
+#include <fstream>
 #include <list> 
+#include <string>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -12,6 +14,7 @@ using namespace std;
 SDL_Window* window = NULL;
 SDL_Renderer* game_renderer = NULL;
 SDL_Texture* sprite_sheet = NULL;
+int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE];
 
 int init(){
 	if(SDL_Init(SDL_INIT_VIDEO) < 0){
@@ -61,35 +64,29 @@ void clean_up(){
     SDL_Quit();
 }
 
+void read_map_from_file(string file_name){
+	ifstream the_file;
+	int c;
+	int j = 0;
+	int i = 0;
+	the_file.open(file_name);
+	while(the_file >> c){
+		map[j][i] = c;
+		i++;
+		if(i == SCREEN_WIDTH / TILE_SIZE){
+			i = 0;
+			j++;
+		}
+	}
+	the_file.close();
+}
+
 int main(int argv, char* args[]){
 	if(!init())
 		return 1;
 
-	Player* player = new Player(20, 304, 32, 32);
-
-	//remove all this eventually to read levels from files
-	int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE];
-	for(int i = 0; i < SCREEN_HEIGHT/TILE_SIZE; i++)
-		for(int j = 0; j < SCREEN_WIDTH/TILE_SIZE; j++)
-			map[i][j] = SKY;
-
-	for(int i = 0; i < SCREEN_WIDTH/16; i++){
-		map[336/TILE_SIZE][i] = BRICK;
-		map[(336-64)/16][i] = BRICK;
-	}
-
-	map[(336-16)/TILE_SIZE][10] = BRICK;
-	map[(336-32)/TILE_SIZE][10] = BRICK;
-	map[(336-48)/TILE_SIZE][10] = BRICK;
-	map[(336-64)/TILE_SIZE][10] = BRICK;
-
-	map[(336-64)/16][4] = SKY;
-	map[(336-64)/16][5] = SKY;
-	map[(336-64)/16][6] = SKY;
-
-	map[(336-64)/16][12] = SKY;
-	map[(336-64)/16][13] = SKY;
-	map[(336-64)/16][14] = SKY;
+	Player* player = new Player(20, 200, 32, 32);
+	read_map_from_file("levels/level1.map");
 
 	SDL_Rect sky_src_rect;
 	sky_src_rect.x = 0;
