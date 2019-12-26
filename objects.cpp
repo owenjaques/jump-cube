@@ -75,7 +75,7 @@ void Player::move_left(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE])
 }
 
 void Player::move_right(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
-	if(velocity < TERMINAL_VELOCITY)
+	if(velocity < TERMINAL_VELOCITY && !is_colliding(RIGHT, map))
 		dest_rect.x += 2;
 }
 
@@ -103,6 +103,8 @@ bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN
 				return true;
 			break;
 		case RIGHT:
+			if(dest_rect.x % TILE_SIZE == 0 && (map[dest_rect.y / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 2] == BRICK || map[(dest_rect.y / TILE_SIZE) + 1][(dest_rect.x / TILE_SIZE) + 2] == BRICK || (dest_rect.y % TILE_SIZE != 0 && map[(dest_rect.y / TILE_SIZE) + 2][(dest_rect.x / TILE_SIZE) + 2] == BRICK)))
+				return true;
 			break;
 	}
 	return false;
