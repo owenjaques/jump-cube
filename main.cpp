@@ -84,7 +84,9 @@ int main(int argv, char* args[]){
 	list<Brick*> bricks;
 	for(int i = 0; i < SCREEN_WIDTH/16; i++){
 		bricks.push_back(new Brick(i*16, 336, 16, 16));
+		bricks.push_back(new Brick(i*16, 336-64, 16, 16));
 		map[336/TILE_SIZE][i] = BRICK;
+		map[(336-64)/16][i] = BRICK;
 	}
 
 	SDL_Rect sky_rect = create_sky();

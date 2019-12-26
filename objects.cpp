@@ -49,7 +49,6 @@ void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TIL
 		else 
 			direction = RIGHT;
 	}
-		
 	else if(states[RIGHT])
 		direction = RIGHT;
 	else if(states[LEFT])
@@ -57,7 +56,7 @@ void Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TIL
 	
 	if(direction == RIGHT)
 		move_right();
-	if(direction == LEFT)
+	else if(direction == LEFT)
 		move_left();
 
 	former_direction = direction;
@@ -86,9 +85,14 @@ void Player::jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 		velocity = -6;
 }
 
+//change the == BRICK to is in something to hit function when there are more than bricks
 bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	switch(direction){
 		case UP:
+			if((dest_rect.y - TILE_SIZE) % TILE_SIZE == 0 && (map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK)){
+				velocity = 0;
+				return true;
+			}
 			break;
 		case DOWN:
 			if((dest_rect.y + dest_rect.h) % TILE_SIZE == 0 && (map[(dest_rect.y + dest_rect.h) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y + dest_rect.h) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK))
@@ -105,12 +109,14 @@ bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN
 void Player::change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//obviously change things to test if they are contacting with anything
 	for(int i = 0; i < abs((int)velocity); i++){
-		if(velocity < 0)
-			//if not hitting something from above
-			dest_rect.y--;
-		else
+		if(velocity < 0){
+			if(!is_colliding(UP, map))//if not hitting something from above
+				dest_rect.y--;
+		}
+		else {
 			if(!is_colliding(DOWN, map))//if not hitting something from below
 				dest_rect.y++;
+		}
 	}
 
 	//if not hitting something from below
