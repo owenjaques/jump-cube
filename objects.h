@@ -51,4 +51,13 @@ class Clouds {
 		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet, int direction);
 };
 
+class Bullet: public Object {
+	public:
+		Bullet(int x, int y, int width, int height, int direction);
+		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
+
+	private:
+		const int SPEED = 16;
+};
+
 #endif
