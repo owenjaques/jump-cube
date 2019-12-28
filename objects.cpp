@@ -157,3 +157,28 @@ bool Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	}
 	return false;
 }
+
+Cloud::Cloud(int x, int y, int width, int height):Object(x, y, width, height){
+	src_rect.x = 64;
+	src_rect.y = 32;
+	src_rect.h = 32;
+	src_rect.w = 64;
+}
+
+void Cloud::move(int direction){
+	int move_speed = 1;
+	if(direction == LEFT){
+		if(dest_rect.x < -dest_rect.w){
+			dest_rect.x = SCREEN_WIDTH + dest_rect.w;
+			dest_rect.y = rand() % SCREEN_HEIGHT;
+		}
+		else
+			dest_rect.x -= move_speed;
+	}
+	if(dest_rect.x > SCREEN_WIDTH + dest_rect.w){
+		dest_rect.x = -dest_rect.w;
+		dest_rect.y = rand() % SCREEN_HEIGHT;
+	}
+	else
+		dest_rect.x += move_speed;
+}

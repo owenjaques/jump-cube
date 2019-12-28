@@ -33,4 +33,10 @@ class Player: public Object {
 		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };
 
+class Cloud: public Object {
+	public:
+		Cloud(int x, int y, int width, int height);
+		void move(int direction);
+};
+
 #endif

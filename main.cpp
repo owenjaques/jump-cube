@@ -5,6 +5,8 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "constants.h"
 #include "objects.h"
@@ -79,6 +81,8 @@ void read_map_from_file(string file_name){
 		}
 	}
 	the_file.close();
+
+
 }
 
 SDL_Rect rand_sky_tile(int i, int j){
@@ -106,7 +110,8 @@ SDL_Rect rand_sky_tile(int i, int j){
 	sky_src_rect4.w = 16;
 	sky_src_rect4.h = 16;
 
-	int x = (i*7 + j*5) / 3;
+	int x = (i*7 + j*11);
+	cout << x;
 	switch(x % 4){
 		case 0:
 			return sky_src_rect1;
@@ -131,6 +136,13 @@ int main(int argv, char* args[]){
 	brick_src_rect.y = 32;
 	brick_src_rect.h = 16;
 	brick_src_rect.w = 16;
+
+	//randomly generates a list of clouds
+	srand(time(NULL));
+	int num_clouds = rand() % 8 + 3;
+	list<Cloud*> clouds;
+	for(int i = 0; i < num_clouds; i++)
+		clouds.push_back(new Cloud(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT, 64, 32));
 
 	bool exit = false;
 	SDL_Event e;
@@ -183,6 +195,12 @@ int main(int argv, char* args[]){
 
 		//render player
 		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
+
+		//render clouds
+		for(list<Cloud*>::iterator it = clouds.begin(); it != clouds.end(); it++){
+			(*it)->move(RIGHT);
+			SDL_RenderCopy(game_renderer, sprite_sheet, &((*it)->src_rect), &((*it)->dest_rect));
+		}
 		
 		//update screen
 		SDL_RenderPresent(game_renderer);
@@ -191,6 +209,7 @@ int main(int argv, char* args[]){
 	}
 
 	delete player;
+	clouds.clear();
 	clean_up();
 	return 0;
 }
