@@ -17,6 +17,7 @@ class Object {
 		SDL_Rect src_rect;
 		
 		Object(int x, int y, int width, int height);
+		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };
 
 class Bullet: public Object {
@@ -45,9 +46,8 @@ class Player: public Object {
 		bool jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		bool drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
-		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void fire(int DIRECTION);
-		void delete_bullets();
+		void delete_bullets(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };
 
 class Cloud: public Object {

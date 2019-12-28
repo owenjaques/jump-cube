@@ -21,7 +21,7 @@ void Player::update(int frame, std::array<bool, 6> states, int map[SCREEN_HEIGHT
 	int direction = get_direction(states, map);
 	change_y(map);
 
-	delete_bullets();
+	delete_bullets(map);
 	if(states[FIRE_LEFT])
 		fire(LEFT);
 	if(states[FIRE_RIGHT])
@@ -111,13 +111,11 @@ bool Player::jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 }
 
 //change the == BRICK to is in something to hit function when there are more than bricks
-bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+bool Object::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	switch(direction){
 		case UP:
-			if((dest_rect.y - TILE_SIZE) % TILE_SIZE == 0 && (map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK || (dest_rect.x % TILE_SIZE != 0 && map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 2] == BRICK))){
-				velocity = 0;
+			if((dest_rect.y - TILE_SIZE) % TILE_SIZE == 0 && (map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK || (dest_rect.x % TILE_SIZE != 0 && map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 2] == BRICK)))
 				return true;
-			}
 			break;
 		case DOWN:
 			if((dest_rect.y + dest_rect.h) % TILE_SIZE == 0 && (map[(dest_rect.y + dest_rect.h) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y + dest_rect.h) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK || (dest_rect.x % TILE_SIZE != 0 && map[(dest_rect.y + dest_rect.h) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 2] == BRICK)))
@@ -141,6 +139,8 @@ void Player::change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 		if(velocity < 0){
 			if(!is_colliding(UP, map))//if not hitting something from above
 				dest_rect.y--;
+			else
+				velocity = 0;
 		}
 		else {
 			if(!is_colliding(DOWN, map))//if not hitting something from below
@@ -185,10 +185,10 @@ void Player::fire(int direction){
 	}
 }
 
-void Player::delete_bullets(){
+void Player::delete_bullets(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	std::list<Bullet*>::iterator it = bullets.begin();
 	while(it != bullets.end()){
-		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH)
+		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH || (*it)->is_colliding(RIGHT, map) || (*it)->is_colliding(LEFT, map))
 			bullets.erase(it++);
 		else
 			it++;
