@@ -57,7 +57,7 @@ class Bullet: public Object {
 		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
 
 	private:
-		const int SPEED = 16;
+		int speed;
 };
 
 #endif

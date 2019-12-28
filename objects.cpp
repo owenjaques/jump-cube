@@ -205,3 +205,20 @@ void Clouds::update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet, int 
 Clouds::~Clouds(){
 	clouds.clear();
 }
+
+Bullet::Bullet(int x, int y, int width, int height, int direction):Object(x, y, width, height){
+	src_rect.x = 32;
+	src_rect.y = 48;
+	src_rect.h = 8;
+	src_rect.w = 8;
+
+	speed = 8;
+
+	if(direction == RIGHT)
+		speed *= -1;
+}
+
+void Bullet::update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
+	dest_rect.x += speed;
+	SDL_RenderCopy(game_renderer, sprite_sheet, &src_rect, &dest_rect);
+}
