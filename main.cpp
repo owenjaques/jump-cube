@@ -140,13 +140,28 @@ int main(int argv, char* args[]){
 	int frame = 0;
 	while(!exit){
 		//finds out which keys have been pressed
+		array<bool, 6> states = {false, false, false, false, false, false};
 		while(SDL_PollEvent(&e) != 0){
-			if(e.type == SDL_QUIT)
-				exit = true;
+			switch(e.type){
+				case SDL_QUIT:
+					exit = true;
+					break;
+				case SDL_KEYDOWN:
+					switch(e.key.keysym.scancode){
+						case SDL_SCANCODE_Z:
+							states[FIRE_LEFT] = true;
+							break;
+						case SDL_SCANCODE_X:
+							states[FIRE_RIGHT] = true;
+							break;
+						default:
+							break;
+					}
+					break;
+			}
 		}
 		//sees if the player is being moved at all
 		const Uint8* current_key_states = SDL_GetKeyboardState(NULL);
-		array<bool, 4> states = {false, false, false, false};
 		if(current_key_states[SDL_SCANCODE_UP])
 			states[UP] = true;
 		if(current_key_states[SDL_SCANCODE_DOWN])
@@ -201,4 +216,3 @@ int main(int argv, char* args[]){
 	clean_up();
 	return 0;
 }
-

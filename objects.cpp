@@ -17,9 +17,16 @@ Player::Player(int x, int y, int width, int height):Object(x, y, width, height){
 	velocity = 0;
 }
 
-void Player::update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+void Player::update(int frame, std::array<bool, 6> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	int direction = get_direction(states, map);
 	change_y(map);
+
+	delete_bullets();
+	if(states[FIRE_LEFT])
+		fire(LEFT);
+	if(states[FIRE_RIGHT])
+		fire(RIGHT);
+
 	//finds which frame it is at
 	switch(frame / 4){
 		case 0:
@@ -47,10 +54,11 @@ void Player::update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT
 		src_rect.y = 160;	
 }
 
-int Player::get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+int Player::get_direction(std::array<bool, 6> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	//determines which way to go depending on the last key(s) pressed for smooth playing
 	static int former_direction = -1;
-	static std::array<bool, 4> former_states = {false, false, false, false};
+	static std::array<bool, 6> former_states = {false, false, false, false};
+
 	int direction = -1;
 	if(states[RIGHT] && states[LEFT]){
 		if(former_states[RIGHT] && former_states[LEFT])
@@ -160,6 +168,31 @@ bool Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 
 void Player::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 	SDL_RenderCopy(game_renderer, sprite_sheet, &src_rect, &dest_rect);
+	for(std::list<Bullet*>::iterator it = bullets.begin(); it != bullets.end(); it++)
+		(*it)->update(game_renderer, sprite_sheet);
+}
+
+void Player::fire(int direction){
+	switch(direction){
+		case RIGHT:
+			if(bullets.size() <= MAX_BULLETS)
+				bullets.push_back(new Bullet(dest_rect.x + dest_rect.w, dest_rect.y + (dest_rect.h / 2) - 4, 8, 8, RIGHT));
+			break;
+		case LEFT:
+			if(bullets.size() <= MAX_BULLETS)
+				bullets.push_back(new Bullet(dest_rect.x, dest_rect.y + (dest_rect.h / 2) - 4, 8, 8, LEFT));
+			break;
+	}
+}
+
+void Player::delete_bullets(){
+	std::list<Bullet*>::iterator it = bullets.begin();
+	while(it != bullets.end()){
+		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH)
+			bullets.erase(it++);
+		else
+			it++;
+	}
 }
 
 Cloud::Cloud(int x, int y, int width, int height):Object(x, y, width, height){
@@ -214,7 +247,7 @@ Bullet::Bullet(int x, int y, int width, int height, int direction):Object(x, y, 
 
 	speed = 8;
 
-	if(direction == RIGHT)
+	if(direction == LEFT)
 		speed *= -1;
 }
 

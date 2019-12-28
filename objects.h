@@ -19,22 +19,35 @@ class Object {
 		Object(int x, int y, int width, int height);
 };
 
+class Bullet: public Object {
+	public:
+		Bullet(int x, int y, int width, int height, int direction);
+		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
+
+	private:
+		int speed;
+};
+
 class Player: public Object {
 	public:
 		Player(int x, int y, int width, int height);
-		void update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		void update(int frame, std::array<bool, 6> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
 
 	private:
 		const int TERMINAL_VELOCITY = 10;
+		const int MAX_BULLETS = 4;
 		double velocity;
-		int get_direction(std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		std::list<Bullet*> bullets;
+		int get_direction(std::array<bool, 6> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void move_right(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void move_left(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		bool jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		bool drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		void fire(int DIRECTION);
+		void delete_bullets();
 };
 
 class Cloud: public Object {
@@ -49,15 +62,6 @@ class Clouds {
 		Clouds(int max_val, int min_val);
 		~Clouds();
 		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet, int direction);
-};
-
-class Bullet: public Object {
-	public:
-		Bullet(int x, int y, int width, int height, int direction);
-		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
-
-	private:
-		int speed;
 };
 
 #endif
