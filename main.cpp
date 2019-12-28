@@ -5,8 +5,6 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <stdlib.h>
-#include <time.h>
 
 #include "constants.h"
 #include "objects.h"
@@ -81,8 +79,6 @@ void read_map_from_file(string file_name){
 		}
 	}
 	the_file.close();
-
-
 }
 
 SDL_Rect rand_sky_tile(int i, int j){
@@ -137,12 +133,7 @@ int main(int argv, char* args[]){
 	brick_src_rect.h = 16;
 	brick_src_rect.w = 16;
 
-	//randomly generates a list of clouds
-	srand(time(NULL));
-	int num_clouds = rand() % 8 + 3;
-	list<Cloud*> clouds;
-	for(int i = 0; i < num_clouds; i++)
-		clouds.push_back(new Cloud(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT, 64, 32));
+	Clouds clouds(10, 3);
 
 	bool exit = false;
 	SDL_Event e;
@@ -165,6 +156,7 @@ int main(int argv, char* args[]){
 		if(current_key_states[SDL_SCANCODE_RIGHT])
 			states[RIGHT] = true;
 		player->update(frame, states, map);
+		frame = (frame / 4 == 4) ? 0 : frame + 1;
 
 		//sees if the player should die
 		if(player->dest_rect.y > SCREEN_HEIGHT){
@@ -172,12 +164,13 @@ int main(int argv, char* args[]){
 			player = new Player(20, 200, 32, 32);
 		}
 
+		//start rendering things here
 		SDL_RenderClear(game_renderer);
 
-		//renders the map
+		//render map
 		SDL_Rect dest_rect;
 		SDL_Rect* src_rect = NULL;
-		for(int i = 0; i < SCREEN_HEIGHT / TILE_SIZE; i++)
+		for(int i = 0; i < SCREEN_HEIGHT / TILE_SIZE; i++){
 			for(int j = 0; j < SCREEN_WIDTH / TILE_SIZE; j++){
 				//decided what to render
 				if(map[i][j] == BRICK){
@@ -192,24 +185,19 @@ int main(int argv, char* args[]){
 
 				SDL_RenderCopy(game_renderer, sprite_sheet, &(*src_rect), &(dest_rect));
 			}
+		}
 
 		//render player
-		SDL_RenderCopy(game_renderer, sprite_sheet, &(player->src_rect), &(player->dest_rect));
+		player->render(game_renderer, sprite_sheet);
 
-		//render clouds
-		for(list<Cloud*>::iterator it = clouds.begin(); it != clouds.end(); it++){
-			(*it)->move(RIGHT);
-			SDL_RenderCopy(game_renderer, sprite_sheet, &((*it)->src_rect), &((*it)->dest_rect));
-		}
+		//render and move clouds
+		clouds.update(game_renderer, sprite_sheet, RIGHT);
 		
 		//update screen
 		SDL_RenderPresent(game_renderer);
-
-		frame = (frame / 4 == 4) ? 0 : frame + 1;
 	}
 
 	delete player;
-	clouds.clear();
 	clean_up();
 	return 0;
 }

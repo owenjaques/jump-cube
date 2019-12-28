@@ -4,6 +4,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <array>
+#include <list>
+#include <stdlib.h>
+#include <time.h>
 #include "constants.h"
 
 class Object {
@@ -20,6 +23,7 @@ class Player: public Object {
 	public:
 		Player(int x, int y, int width, int height);
 		void update(int frame, std::array<bool, 4> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		void render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
 
 	private:
 		const int TERMINAL_VELOCITY = 10;
@@ -37,6 +41,14 @@ class Cloud: public Object {
 	public:
 		Cloud(int x, int y, int width, int height);
 		void move(int direction);
+};
+
+class Clouds {
+	public:
+		std::list<Cloud*> clouds;
+		Clouds(int max_val, int min_val);
+		~Clouds();
+		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet, int direction);
 };
 
 #endif

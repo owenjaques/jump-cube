@@ -158,6 +158,10 @@ bool Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	return false;
 }
 
+void Player::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
+	SDL_RenderCopy(game_renderer, sprite_sheet, &src_rect, &dest_rect);
+}
+
 Cloud::Cloud(int x, int y, int width, int height):Object(x, y, width, height){
 	src_rect.x = 64;
 	src_rect.y = 32;
@@ -181,4 +185,23 @@ void Cloud::move(int direction){
 	}
 	else
 		dest_rect.x += move_speed;
+}
+
+Clouds::Clouds(int max_val, int min_val){
+	//randomly generates a list of clouds
+	srand(time(NULL));
+	int num_clouds = rand() % (max_val - min_val + 1) + min_val;
+	for(int i = 0; i < num_clouds; i++)
+		clouds.push_back(new Cloud(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT, 64, 32));
+}
+
+void Clouds::update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet, int direction){
+	for(std::list<Cloud*>::iterator it = clouds.begin(); it != clouds.end(); it++){
+		(*it)->move(direction);
+		SDL_RenderCopy(game_renderer, sprite_sheet, &((*it)->src_rect), &((*it)->dest_rect));
+	}
+}
+
+Clouds::~Clouds(){
+	clouds.clear();
 }
