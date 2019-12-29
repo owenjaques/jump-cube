@@ -271,3 +271,20 @@ bool Bullet::is_colliding(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZ
 		return true;
 	return false;
 }
+
+Enemies::Enemies(Uint8 red, Uint8 green, Uint8 blue){
+	this->red = red;
+	this->green = green;
+	this->blue = blue;
+}
+
+void Enemies::add_enemy(int x, int y){
+	enemies.push_back(new Player(x, y, 32, 32));
+}
+
+void Enemies::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
+	SDL_SetTextureColorMod(sprite_sheet, red, green, blue);
+	for(std::list<Player*>::iterator it = enemies.begin(); it != enemies.end(); it++)
+		(*it)->render(game_renderer, sprite_sheet);
+	SDL_SetTextureColorMod(sprite_sheet, 255, 255, 255);
+}

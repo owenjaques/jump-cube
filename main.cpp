@@ -15,6 +15,8 @@ SDL_Window* window = NULL;
 SDL_Renderer* game_renderer = NULL;
 SDL_Texture* sprite_sheet = NULL;
 int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE];
+Player* player;
+Enemies enemies(200, 255, 100);
 
 int init(){
 	if(SDL_Init(SDL_INIT_VIDEO) < 0){
@@ -71,6 +73,14 @@ void read_map_from_file(string file_name){
 	int i = 0;
 	the_file.open(file_name);
 	while(the_file >> c){
+		if(c == ENEMY){
+			enemies.add_enemy(i*TILE_SIZE, j*TILE_SIZE);
+			c = SKY;
+		}
+		else if(c == PLAYER){
+			player = new Player(i*TILE_SIZE, j*TILE_SIZE, 32, 32);
+			c = SKY;
+		}
 		map[j][i] = c;
 		i++;
 		if(i == SCREEN_WIDTH / TILE_SIZE){
@@ -124,7 +134,6 @@ int main(int argv, char* args[]){
 	if(!init())
 		return 1;
 
-	Player* player = new Player(20, 200, 32, 32);
 	read_map_from_file("levels/level1.map");
 
 	SDL_Rect brick_src_rect;
@@ -204,6 +213,9 @@ int main(int argv, char* args[]){
 
 		//render player
 		player->render(game_renderer, sprite_sheet);
+
+		//render enemies
+		enemies.render(game_renderer, sprite_sheet);
 
 		//render and move clouds
 		clouds.update(game_renderer, sprite_sheet, RIGHT);

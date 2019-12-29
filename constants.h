@@ -9,3 +9,5 @@
 #define SCREEN_WIDTH (46*TILE_SIZE)
 #define SKY 0
 #define BRICK 1
+#define ENEMY 2
+#define PLAYER 3

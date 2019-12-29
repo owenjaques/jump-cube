@@ -66,4 +66,16 @@ class Clouds {
 		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet, int direction);
 };
 
+class Enemies {
+	public:
+		void render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
+		void add_enemy(int x, int y);
+		Enemies(Uint8 red, Uint8 green, Uint8 blue);
+	private:
+		std::list<Player*> enemies;
+		Uint8 red;
+		Uint8 green;
+		Uint8 blue;
+};
+
 #endif
