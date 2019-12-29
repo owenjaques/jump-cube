@@ -17,13 +17,14 @@ class Object {
 		SDL_Rect src_rect;
 		
 		Object(int x, int y, int width, int height);
-		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };
 
 class Bullet: public Object {
 	public:
 		Bullet(int x, int y, int width, int height, int direction);
-		void update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
+		void render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
+		void update();
+		bool is_colliding(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 
 	private:
 		int speed;
@@ -46,6 +47,7 @@ class Player: public Object {
 		bool jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		bool drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void change_y(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void fire(int DIRECTION);
 		void delete_bullets(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 };

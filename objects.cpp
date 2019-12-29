@@ -21,13 +21,17 @@ void Player::update(int frame, std::array<bool, 6> states, int map[SCREEN_HEIGHT
 	int direction = get_direction(states, map);
 	change_y(map);
 
+	//updates bullets position and adjusts speed accordingly
+	for(std::list<Bullet*>::iterator it = bullets.begin(); it != bullets.end(); it++)
+		(*it)->update();
 	delete_bullets(map);
+
 	if(states[FIRE_LEFT])
 		fire(LEFT);
 	if(states[FIRE_RIGHT])
 		fire(RIGHT);
 
-	//finds which frame it is at
+	//finds which frame it is at for animations
 	switch(frame / 4){
 		case 0:
 			src_rect.x = 0;
@@ -111,7 +115,7 @@ bool Player::jump(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 }
 
 //change the == BRICK to is in something to hit function when there are more than bricks
-bool Object::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+bool Player::is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	switch(direction){
 		case UP:
 			if((dest_rect.y - TILE_SIZE) % TILE_SIZE == 0 && (map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK || map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 1] == BRICK || (dest_rect.x % TILE_SIZE != 0 && map[(dest_rect.y - TILE_SIZE) / TILE_SIZE][(dest_rect.x / TILE_SIZE) + 2] == BRICK)))
@@ -169,7 +173,7 @@ bool Player::drop(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 void Player::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 	SDL_RenderCopy(game_renderer, sprite_sheet, &src_rect, &dest_rect);
 	for(std::list<Bullet*>::iterator it = bullets.begin(); it != bullets.end(); it++)
-		(*it)->update(game_renderer, sprite_sheet);
+		(*it)->render(game_renderer, sprite_sheet);
 }
 
 void Player::fire(int direction){
@@ -188,8 +192,11 @@ void Player::fire(int direction){
 void Player::delete_bullets(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	std::list<Bullet*>::iterator it = bullets.begin();
 	while(it != bullets.end()){
-		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH || (*it)->is_colliding(RIGHT, map) || (*it)->is_colliding(LEFT, map))
-			bullets.erase(it++);
+		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH || (*it)->is_colliding(map)){
+			std::list<Bullet*>::iterator temp = it++;
+			bullets.erase(temp);
+			delete *temp;
+		}
 		else
 			it++;
 	}
@@ -251,7 +258,16 @@ Bullet::Bullet(int x, int y, int width, int height, int direction):Object(x, y, 
 		speed *= -1;
 }
 
-void Bullet::update(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
+void Bullet::update(){
 	dest_rect.x += speed;
+}
+
+void Bullet::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 	SDL_RenderCopy(game_renderer, sprite_sheet, &src_rect, &dest_rect);
+}
+
+bool Bullet::is_colliding(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	if(map[dest_rect.y / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK)
+		return true;
+	return false;
 }
