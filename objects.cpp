@@ -184,7 +184,7 @@ void Player::fire(int direction){
 			break;
 		case LEFT:
 			if(bullets.size() <= MAX_BULLETS)
-				bullets.push_back(new Bullet(dest_rect.x, dest_rect.y + (dest_rect.h / 2) - 4, 8, 8, LEFT));
+				bullets.push_back(new Bullet(dest_rect.x - 8, dest_rect.y + (dest_rect.h / 2) - 4, 8, 8, LEFT));
 			break;
 	}
 }
@@ -192,14 +192,23 @@ void Player::fire(int direction){
 void Player::delete_bullets(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	std::list<Bullet*>::iterator it = bullets.begin();
 	while(it != bullets.end()){
-		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH || (*it)->is_colliding(map)){
+		if((*it)->dest_rect.x + (*it)->dest_rect.w < 0 || (*it)->dest_rect.x > SCREEN_WIDTH || (*it)->is_colliding_with_brick(map)){
 			std::list<Bullet*>::iterator temp = it++;
 			bullets.erase(temp);
-			delete *temp;
 		}
 		else
 			it++;
 	}
+}
+
+bool Player::is_shot(Enemies enemies, Player* player){
+	std::list<Bullet*> bullets = enemies.get_bullets();
+	if(player)
+		bullets.insert(bullets.end(), player->bullets.begin(), player->bullets.end());
+	for(std::list<Bullet*>::iterator it = bullets.begin(); it != bullets.end(); it++)
+		if((*it)->is_colliding_with_player(this))
+			return true;
+	return false;
 }
 
 Cloud::Cloud(int x, int y, int width, int height):Object(x, y, width, height){
@@ -266,8 +275,14 @@ void Bullet::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 	SDL_RenderCopy(game_renderer, sprite_sheet, &src_rect, &dest_rect);
 }
 
-bool Bullet::is_colliding(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+bool Bullet::is_colliding_with_brick(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	if(map[dest_rect.y / TILE_SIZE][dest_rect.x / TILE_SIZE] == BRICK)
+		return true;
+	return false;
+}
+
+bool Bullet::is_colliding_with_player(Player* player){
+	if(player->dest_rect.x < dest_rect.x + dest_rect.w && player->dest_rect.x + player->dest_rect.w > dest_rect.x && player->dest_rect.y < dest_rect.y + dest_rect.h && player->dest_rect.y + player->dest_rect.h > dest_rect.y)
 		return true;
 	return false;
 }
@@ -289,7 +304,8 @@ void Enemies::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 	SDL_SetTextureColorMod(sprite_sheet, 255, 255, 255);
 }
 
-void Enemies::update(int frame, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+void Enemies::update(int frame, Player* player, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	check_if_shot(player);
 	for(std::list<Player*>::iterator it = enemies.begin(); it != enemies.end(); it++){
 		std::array<bool, 6> states = {false, false, false, false, false, false};
 		if(rand() % 75 == 0)
@@ -300,4 +316,25 @@ void Enemies::update(int frame, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TI
 			states[FIRE_RIGHT] = true;
 		(*it)->update(frame, states, map);
 	}
+}
+
+void Enemies::check_if_shot(Player* player){
+	std::list<Player*>::iterator it = enemies.begin();
+	while(it != enemies.end()){
+		if((*it)->is_shot(*this, player)){
+			std::list<Player*>::iterator temp = it++;
+			enemies.erase(temp);
+		}
+		else
+			it++;
+	}
+}
+
+std::list<Bullet*> Enemies::get_bullets(){
+	std::list<Bullet*> bullets;
+
+	for(std::list<Player*>::iterator it = enemies.begin(); it != enemies.end(); it++)
+		bullets.insert(bullets.end(), (*it)->bullets.begin(), (*it)->bullets.end());
+
+	return bullets;
 }
