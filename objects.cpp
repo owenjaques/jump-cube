@@ -288,3 +288,16 @@ void Enemies::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 		(*it)->render(game_renderer, sprite_sheet);
 	SDL_SetTextureColorMod(sprite_sheet, 255, 255, 255);
 }
+
+void Enemies::update(int frame, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+	for(std::list<Player*>::iterator it = enemies.begin(); it != enemies.end(); it++){
+		std::array<bool, 6> states = {false, false, false, false, false, false};
+		if(rand() % 75 == 0)
+			states[UP] = true;
+		if(rand() % 100 == 0)
+			states[FIRE_LEFT] = true;
+		if(rand() % 100 == 0)
+			states[FIRE_RIGHT] = true;
+		(*it)->update(frame, states, map);
+	}
+}

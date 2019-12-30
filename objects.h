@@ -50,6 +50,7 @@ class Player: public Object {
 		bool is_colliding(int direction, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void fire(int DIRECTION);
 		void delete_bullets(int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
+		bool is_shot(Enemies enemies, Player* player);
 };
 
 class Cloud: public Object {
@@ -69,6 +70,7 @@ class Clouds {
 class Enemies {
 	public:
 		void render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet);
+		void update(int frame, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]);
 		void add_enemy(int x, int y);
 		Enemies(Uint8 red, Uint8 green, Uint8 blue);
 	private:
