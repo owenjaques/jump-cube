@@ -17,9 +17,12 @@ Player::Player(int x, int y, int width, int height):Object(x, y, width, height){
 	velocity = 0;
 }
 
-void Player::update(int frame, std::array<bool, 6> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
+bool Player::update(int frame, std::array<bool, 6> states, Enemies enemies, Player* player, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
 	int direction = get_direction(states, map);
 	change_y(map);
+
+	if(is_dead(enemies, player))
+		return false;
 
 	//updates bullets position and adjusts speed accordingly
 	for(std::list<Bullet*>::iterator it = bullets.begin(); it != bullets.end(); it++)
@@ -55,7 +58,9 @@ void Player::update(int frame, std::array<bool, 6> states, int map[SCREEN_HEIGHT
 	if(!is_colliding(DOWN, map))
 		src_rect.y = 128;
 	if(velocity == TERMINAL_VELOCITY)
-		src_rect.y = 160;	
+		src_rect.y = 160;
+
+	return true;
 }
 
 int Player::get_direction(std::array<bool, 6> states, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
@@ -211,6 +216,10 @@ bool Player::is_shot(Enemies enemies, Player* player){
 	return false;
 }
 
+bool Player::is_dead(Enemies enemies, Player* player){
+	return is_shot(enemies, player) || (dest_rect.y > SCREEN_HEIGHT);
+}
+
 Cloud::Cloud(int x, int y, int width, int height):Object(x, y, width, height){
 	src_rect.x = 64;
 	src_rect.y = 32;
@@ -305,8 +314,8 @@ void Enemies::render(SDL_Renderer* game_renderer, SDL_Texture* sprite_sheet){
 }
 
 void Enemies::update(int frame, Player* player, int map[SCREEN_HEIGHT/TILE_SIZE][SCREEN_WIDTH/TILE_SIZE]){
-	check_if_shot(player);
-	for(std::list<Player*>::iterator it = enemies.begin(); it != enemies.end(); it++){
+	std::list<Player*>::iterator it = enemies.begin();
+	while(it != enemies.end()){
 		std::array<bool, 6> states = {false, false, false, false, false, false};
 		if(rand() % 75 == 0)
 			states[UP] = true;
@@ -314,19 +323,15 @@ void Enemies::update(int frame, Player* player, int map[SCREEN_HEIGHT/TILE_SIZE]
 			states[FIRE_LEFT] = true;
 		if(rand() % 100 == 0)
 			states[FIRE_RIGHT] = true;
-		(*it)->update(frame, states, map);
-	}
-}
 
-void Enemies::check_if_shot(Player* player){
-	std::list<Player*>::iterator it = enemies.begin();
-	while(it != enemies.end()){
-		if((*it)->is_shot(*this, player)){
+		if(!(*it)->update(frame, states, *this, player, map)){
 			std::list<Player*>::iterator temp = it++;
 			enemies.erase(temp);
 		}
-		else
+		else {
 			it++;
+		}
+
 	}
 }
 

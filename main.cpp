@@ -179,12 +179,12 @@ int main(int argv, char* args[]){
 			states[LEFT] = true;
 		if(current_key_states[SDL_SCANCODE_RIGHT])
 			states[RIGHT] = true;
-		player->update(frame, states, map);
+		
 		enemies.update(frame, player, map);
 		frame = (frame / 4 == 4) ? 0 : frame + 1;
 
 		//sees if the player should die
-		if(player->dest_rect.y > SCREEN_HEIGHT){
+		if(!player->update(frame, states, enemies, NULL, map)){
 			delete player;
 			player = new Player(20, 200, 32, 32);
 		}
